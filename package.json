@@ -1,5 +1,5 @@
 {
-  "name": "week-18",
+  "name": "Paytmwallate",
   "private": true,
   "scripts": {
     "db:generate": "cd packages/db && npx prisma generate && cd ../../",
@@ -21,5 +21,8 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "dotenv": "^18.0.0"
+  }
 }

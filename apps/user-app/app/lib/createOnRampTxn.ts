@@ -3,22 +3,31 @@
 import prisma from "@repo/db/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth";
+import { validateAmount } from "./validation";
+
 
 export const createOnRempTransaction = async (
   amount: number,
   Provider: any
 ) => {
   const session = await getServerSession(authOptions);
-  // console.log(session)
-  const token = Math.random().toString();
   //@ts-ignore
-  const userId = session.user.id;
+  const userId = session?.user?.id;
   if (!userId) {
     return {
       success: false,
       message: "User Not Logged in",
     };
   }
+
+  const validated = validateAmount(amount);
+  if (!validated.success) {
+    return {
+      success: false,
+      message: validated.message,
+    };
+  }
+  amount = validated.amount;
 
   try {
     await prisma.onRampTransaction.create({

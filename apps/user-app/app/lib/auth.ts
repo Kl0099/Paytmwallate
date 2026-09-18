@@ -6,7 +6,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      id: "Credentials",
+      id: "credentials",
       name: "Credentials",
       credentials: {
         phone: {
@@ -47,7 +47,7 @@ export const authOptions: NextAuthOptions = {
     colorScheme: "light",
   },
 
-  secret: process.env.JWT_SECRET || "secret",
+  secret: process.env.NEXTAUTH_SECRET || "secret",
   callbacks: {
     async session({ token, session }: any) {
       session.user.id = token.sub;

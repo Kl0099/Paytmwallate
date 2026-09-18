@@ -8,6 +8,9 @@ interface mailsender {
   title: string;
   body: string;
 }
+console.log("MAIL_USER =", process.env.MAIL_USER);
+console.log("MAIL_HOST =", process.env.MAIL_HOST);
+console.log("MAIL_PORT =", process.env.MAIL_PORT);
 const mailSender = async ({ email, number, title, body }: mailsender) => {
   try {
     let transporter = nodemailer.createTransport({
@@ -18,6 +21,7 @@ const mailSender = async ({ email, number, title, body }: mailsender) => {
         pass: process.env.MAIL_PASS,
       },
     });
+	console.log("process.env.MAIL_USER" ,process.env.MAIL_PASS)
     let info = transporter.sendMail({
       from: '"Paytm Wallet" <no-reply@paytm.com>',
       to: `${email}`,

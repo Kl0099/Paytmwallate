@@ -3,15 +3,15 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth";
 import prisma from "@repo/db/client";
+import { validateAmount } from "./validation";
+
 
 export const P2PTransfer = async (
   number: string,
   amount: number,
   token?: string
 ) => {
-  // console.log("P2PTransfer : tokken :", token);
   const session = await getServerSession(authOptions);
-  // console.log("P2PTransfer : ", session);
   //@ts-ignore
   const from = session?.user?.id;
   if (!from) {
@@ -20,6 +20,15 @@ export const P2PTransfer = async (
       message: "error while sending!!!",
     };
   }
+
+  const validated = validateAmount(amount);
+  if (!validated.success) {
+    return {
+      success: false,
+      message: validated.message,
+    };
+  }
+  amount = validated.amount;
   try {
     const me = await prisma.user.findFirst({
       where: {
@@ -64,9 +73,9 @@ export const P2PTransfer = async (
       const fromBalance = await tx.balance.findUnique({
         where: { userId: Number(from) },
       });
-      if (!fromBalance || fromBalance.amount < amount) {
-        throw new Error("Insufficient funds");
-      }
+      if (!fromBalance || fromBalance.amount < amount) { throw new Error("Insufficient funds"); }
+await tx.balance.update({ where: { userId: Number(from) }, data: { amount: { decrement: amount } } });
+await tx.balance.update({ where: { userId: toUser.id }, data: { amount: { increment: amount } } });
 
       await tx.balance.update({
         where: { userId: Number(from) },
